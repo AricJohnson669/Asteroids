@@ -1,5 +1,10 @@
 /**
  * TODO (115): Add an assignment comment block below
+ * 
+ * NAME: Aric Johnson
+ * COURSE: Software Development
+ * TEACHER: Mr. Hardman
+ * DATE LAST MODIFIED: Dec, 13, 2018 
  */
 
 import greenfoot.*;
@@ -15,6 +20,7 @@ public class Space extends World
     private Counter scoreCounter;
     
     //TODO (62): Declare an integer instance constant called START_ASTEROIDS initialized to a one-digit number
+    private final int START_ASTROIDS = 4;
     
 
     /**
@@ -31,7 +37,7 @@ public class Space extends World
          *            Play around with the parameter value until you are 
          *            happy with the look of your scenario
          */
-        
+        paintStars(100);
         
         prepareGame();
     }
@@ -77,7 +83,30 @@ public class Space extends World
      * TODO (9): Inside the loop, fill an oval on the background at a location of (x, y) 
      *           that is 3 pixels wide and 3 pixels high.
      */
-
+    
+    /**
+     * paintStars makes the space background in the world
+     * 
+     * @param int count, represents the ammount of stars in the world
+     * @return Nothing is being returned
+     */
+    private void paintStars(int count)
+    {
+        int x;
+        int y;
+        int transparency;
+        GreenfootImage background = getBackground();
+        
+        for (int i = 0; i < count; i++)
+        {
+            x = Greenfoot.getRandomNumber (getWidth());
+            y = Greenfoot.getRandomNumber (getHeight());
+            transparency = Greenfoot.getRandomNumber(256);
+            getBackground().setColor (new Color (255, 255, 255, transparency));
+            getBackground().fillOval(x, y, 3, 3);
+        }
+    }
+    
     /**
      * prepareGame adds the objects to the game to get the game ready
      * to be played
@@ -96,7 +125,7 @@ public class Space extends World
         addObject(scoreCounter, 60, 480);
         
         //TODO (69): Make a method call to addAsteroids that uses your constant for the number of asteroids
-        
+        addAsteroids(START_ASTROIDS);
     }
     
     /**
@@ -118,6 +147,22 @@ public class Space extends World
      *            new Asteroid object at that location.
      */
     
+    /**
+     * addAsteroids adds the asteroids to the world.
+     * It also sets the size of the asteroids.
+     * 
+     * @param int count, represents the number of asteroids in the world
+     * @return Nohing is being returned
+     */
+    private void addAsteroids (int count)
+    {
+        for (int i = 0;i < count; i++ )
+        {
+            int x = Greenfoot.getRandomNumber(getWidth()/2);
+            int y = Greenfoot.getRandomNumber(getHeight()/2);
+            addObject (new Asteroid(),x,y);
+        }
+    }
 
     /**
      * gameOver displays a ScoreBoard and the player's score

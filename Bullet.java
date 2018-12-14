@@ -10,11 +10,11 @@ public class Bullet extends SmoothMover
 {
     //TODO (78): Declare a static integer instance constant called DAMAGE initialized to 16
     /** The damage this bullet will deal */
-    
+    static final int DAMAGE = 16;
     
     //TODO (79): Declare an integer instance variable called life that is initialized to 30
     /** A bullet looses one life each act, and will disappear when life = 0 */
-    
+    private int life = 30;
     
     /**
      * Bullet is a constructor for objects of type Bullet that
@@ -53,7 +53,16 @@ public class Bullet extends SmoothMover
             
             
             //TODO (90): Check to see if the bullet has hit an asteroid
-            
+        if (life <= 0)
+        {
+            getWorld().removeObject(this);
+        }
+        else
+        {
+            life--;
+            move();
+            checkAsteroidHit();
+        }
     }
     
     /**
@@ -70,4 +79,21 @@ public class Bullet extends SmoothMover
      *      TODO (84): Hit asteroid with DAMAGE
      */
     
+    /**
+     * checkAsteroidHit checks if the bullet has hit an asteroid,
+     * if the asteroid has been hit by the bullet it does 16 damage to the asteroid
+     * 
+     * @param None. There are no asteroids
+     * @return Nothing is being returned
+     */
+    public void checkAsteroidHit()
+    {
+        Asteroid asteroid = (Asteroid) getOneIntersectingObject(Asteroid.class);
+        
+        if (asteroid != null)
+        {
+            getWorld().removeObject(this);
+            asteroid.hit(DAMAGE);
+        }
+    }
 }

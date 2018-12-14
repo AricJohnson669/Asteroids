@@ -10,11 +10,11 @@ public class Asteroid extends SmoothMover
 {
     //TODO (26): Declare an integer instance variable called size
     /** Size of this asteroid */
-    
+    private int size;
 
     //TODO (27): Declare an integer instance variable called stability
     /** When the stability reaches 0 the asteroid will explode */
-    
+    private int stability;
 
 
     /**
@@ -40,7 +40,7 @@ public class Asteroid extends SmoothMover
         super(new Vector(Greenfoot.getRandomNumber(360), 2));
         
         //TODO (32): Delete this line and make a call to the setSize method instead
-        getImage().scale(size, size);
+        setSize(size);
     }
     
     /**
@@ -57,7 +57,7 @@ public class Asteroid extends SmoothMover
         super(velocity);
         
         //TODO (33): Delete this line and make a call to the setSize method instead
-        getImage().scale(size, size);
+        getImage().scale(size,size);
     }
     
     /**
@@ -83,6 +83,18 @@ public class Asteroid extends SmoothMover
      * TODO (31): Scale the image of this Asteroid to a width of size and a height of size
      */
     
+    /**
+     * setSize stes the size of the asteroid
+     * 
+     * @param int size represents the size of the asteroid
+     * @return Nothing is being returned
+     */
+    private void setSize(int size)
+    {
+        stability = size;
+        this.size = size;
+        GreenfootImage image = getImage();
+    }
     
     /**
      * TODO (51): Declare a public method called hit that does not
@@ -111,6 +123,36 @@ public class Asteroid extends SmoothMover
      *      TODO (61): Break up the asteroid into a number of pieces that is 5 or fewer
      */
     
+    /**
+     * hit is a way to detect how many points are earned
+     * after a bullet hits an asteroid
+     * 
+     * @param int damage, represents the ammount of damage
+     *        done to the asteroid
+     * @return Nothing is being returned      
+     */
+    public void hit(int damage)
+    {
+        Space space = (Space) getWorld();
+        stability = stability - damage;
+        
+        if (stability <= 0)
+        {
+            if (size <= 50)
+            {
+                space.countScore(15);
+            }
+            else if (size >= 25)
+            {
+                space.countScore(30);
+            }
+            else
+            {
+                space.countScore(50);
+            }
+            breakUp(5);
+        }
+    }
     
     /**
      * TODO (34): Declare a method called breakUp that does not
@@ -152,4 +194,38 @@ public class Asteroid extends SmoothMover
      *     TODO (50): Underneath the for loop, remove this object
      */
     
+    /**
+     * breakUp makes the asteroid break up into peaces of debris.
+     * It also plays an explostion sound
+     * 
+     * @param int numBreakUp, represents the number of debris 
+     * @return Nothing is being returned
+     */
+    private void breakUp (int numBreakUp)
+    {
+        int rotation;
+        double length;
+        Vector speed;
+        Asteroid debris;
+        Greenfoot.playSound ("Explosion.wav");
+        
+        if (size <= 15)
+        {
+            getWorld().removeObject(this);
+        }
+        else
+        {
+            rotation = getVelocity().getDirection() + Greenfoot.getRandomNumber(45);
+            length = getVelocity().getLength();
+            
+            for (int i = 0; i < numBreakUp; i++)
+            {
+                speed = new Vector (rotation + Greenfoot.getRandomNumber(200)-100, length * 1.2);
+                debris = new Asteroid (size / numBreakUp, speed);
+                getWorld().addObject (debris, getX(), getY());
+                debris.move();
+            }
+            getWorld().removeObject(this);
+        }
+    }
 }

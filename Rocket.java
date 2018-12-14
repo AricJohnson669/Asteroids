@@ -1,4 +1,4 @@
-import greenfoot.*;
+ import greenfoot.*;
 
 /**
  * A rocket that can be controlled by the arrowkeys: up, left, right.
@@ -12,16 +12,16 @@ import greenfoot.*;
 public class Rocket extends SmoothMover
 {
     //TODO (91): Declare a static integer instance constant called GUN_RELOAD_TIME initialized to 10
-    
+    static final int GUN_RELOAD_TIME = 10;
     
     //TODO (92): Declare a static integer instance constant called WAVE_RELOAD_TIME initialized to 500
-    
+    static final int WAVE_RELOAD_TIME = 500;
 
     //TODO (93): Declare an integer instance variable called reloadDelayCount
-    
+    private int reloadDelayCount;
     
     //TODO (94): Declare an integer instance variable called waveDelayCount
-    
+    private int waveDelayCount;
 
     /**
      * Rocket is the constructor for objects of type Rocket
@@ -36,10 +36,10 @@ public class Rocket extends SmoothMover
         addToVelocity(startMotion);
         
         //TODO (95): Initialize reloadDelayCount to 10
-        
+        reloadDelayCount = 10;
 
         //TODO (96): Initialize waveDelayCount to 500
-        
+        waveDelayCount = 500;
     }
 
     /**
@@ -49,18 +49,19 @@ public class Rocket extends SmoothMover
     public void act()
     {
         //TODO (113): Remove the two slashes in front of this line of code
-        //checkWin();
+        checkWin();
         
         move();
         
         //TODO (25): Make a call to the method that checks if the user has pressed keys
-        
+        checkKeys();
 
         //TODO (77): Make a call to the method that checks if the user has collided with an asteroid
-        
+        checkCollision();
 
         //TODO (97): Increase reloadDelayCount and waveDelayCount by 1 each
-        
+        reloadDelayCount++;
+        waveDelayCount++;
     }
     
     /**
@@ -74,7 +75,7 @@ public class Rocket extends SmoothMover
     {
         Space world = (Space)getWorld();
         
-        if( world.getObjects(Asteroid.class).size() == 0 )
+        if (world.getObjects(Asteroid.class).size() == 0 )
         {
             world.gameWon();
         }
@@ -82,7 +83,7 @@ public class Rocket extends SmoothMover
     
     /**
      * TODO (11): Declare a method called checkKeys that does not
-     *          return anything and has not parameters
+     *          return anything and has no parameters
      *          
      * TODO (109): If the user presses the space key...
      * 
@@ -103,6 +104,37 @@ public class Rocket extends SmoothMover
      * TODO (24): Make a method call to ignite using Greenfoot.isKeyDown("up") as a parameter
      */
     
+    /**
+     * checkKeys checks if the spacific keys (space, left, right, z)
+     * are pressed. If they are pressed it will carry out their
+     * corrisponding acctions.
+     * 
+     * @param None. There are no parameter
+     * @return Nothing is returned
+     */
+    private void checkKeys()
+    {
+        if (Greenfoot.isKeyDown ("space"))
+        {
+            fire();
+        }
+        
+        if (Greenfoot.isKeyDown ("left"))
+        {
+            turn (-5);
+        }
+        
+        if (Greenfoot.isKeyDown ("right"))
+        {
+            turn (+5);
+        }
+        
+        if (Greenfoot.isKeyDown ("z"))
+        {
+            startProtonWave();
+        }
+        ignite(Greenfoot.isKeyDown("up"));
+    }
 
     /**
      * TODO (98): Declare a method called fire that does not
@@ -121,6 +153,24 @@ public class Rocket extends SmoothMover
      *      TODO (103): Set the reloadDelayCount equal to 0
      */
     
+    /**
+     * fire, fires a bullet and sets a reload 
+     * time/delay for the bullet
+     * 
+     * @param None. There are no parameters
+     * @return Nothing is being returned
+     */
+    private void fire()
+    {
+        Bullet bullet = new Bullet (getVelocity(), getRotation());
+        
+        if (reloadDelayCount >= GUN_RELOAD_TIME)
+        {
+            getWorld().addObject(bullet, getX(), getY());
+            bullet.move();
+            reloadDelayCount = 0;
+        }
+    }
 
     /**
      * TODO (104): Declare a method called startProtonWave that does not
@@ -136,6 +186,23 @@ public class Rocket extends SmoothMover
      *      TODO (108): Set the waveDelayCount equal to 0
      */
     
+    /**
+     * startProtonWave, fires a proton wave when told to 
+     * and it sets a delay for them
+     * 
+     * @param None. There are no parameters
+     * @return Nothing is being returned
+     */
+    private void startProtonWave()
+    {
+        ProtonWave wave = new ProtonWave();
+        
+        if (waveDelayCount >= WAVE_RELOAD_TIME)
+        {
+            getWorld().addObject(wave, getX(), getY());
+            waveDelayCount = 0;
+        }
+    }
 
     /**
      * TODO (16): Declare a method called ignite that does not
@@ -162,6 +229,27 @@ public class Rocket extends SmoothMover
      *      TODO (23): Set the image to rocket
      */
     
+    /**
+     * ignite pastes a new rocket image that shows it accelerating,
+     * it also makes the rocket go forward 5 pixels each act cycle
+     * 
+     * @param None. There are no parameters
+     * @return Nothing is being returned
+     */
+    private void ignite( boolean boosterOn )
+    {
+        GreenfootImage rocket = new GreenfootImage("rocket.png");
+        GreenfootImage rocketWithThrust = new GreenfootImage("rocketWithThrust.png");
+        if (boosterOn == true)
+        {
+            setImage(rocketWithThrust);
+            addToVelocity(new Vector(getRotation(), 0.3));
+        }
+        else
+        {
+            setImage(rocket);
+        }
+    }
 
     /**
      * TODO (70): Declare a method called checkCollision that does not
@@ -171,7 +259,7 @@ public class Rocket extends SmoothMover
      *          stores a reference to the world
      *          
      * TODO (72): Declare a local Actor variable called currentAsteroid
-     *          that is initialized to get one intersectinf object of
+     *          that is initialized to get one intersecting object of
      *          class Asteroid
      *          
      * TODO (73): If currentAsteroid is not nothing...
@@ -183,4 +271,22 @@ public class Rocket extends SmoothMover
      *      TODO (76): Make a method call to space's game over method
      */
     
+    /**
+     * checkCollistion checks if the rocket has collided with the asteroid
+     * 
+     * @param None. There are no parameters
+     * @return Nothing is being returned
+     */
+    private void checkCollision()
+    {
+        Space space = (Space) getWorld();
+        Actor currentAsteroid = (Asteroid)getOneIntersectingObject(Asteroid.class);
+        
+        if (currentAsteroid != null)
+        {
+            getWorld().addObject (new Explosion(), getX(), getY());
+            getWorld().removeObject(this);
+            space.gameOver();
+        }
+    }
 }
